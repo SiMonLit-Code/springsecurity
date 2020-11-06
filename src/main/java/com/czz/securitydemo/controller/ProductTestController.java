@@ -1,5 +1,6 @@
 package com.czz.securitydemo.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -18,7 +19,7 @@ public class ProductTestController {
 
     @RequestMapping("/info")
     @ResponseBody
-   // @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     public String productInfo(){
         //获取当前用户信息
         String currentUser = "";

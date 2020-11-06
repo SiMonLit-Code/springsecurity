@@ -1,13 +1,12 @@
 package com.czz.securitydemo.config;
 
+import com.czz.securitydemo.filter.MyAuthTokenConfigurer;
+import com.czz.securitydemo.filter.MyAuthenticationProvider;
 import com.czz.securitydemo.token.TokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -17,12 +16,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @create : 2020-11-04 11:35:00
  * @description :
  */
-@Configuration
+/*@Configuration
+@EnableGlobalMethodSecurity(prePostEnabled=true)*/
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     UserDetailsService userDetailsService;
+    @Autowired
+    private MyAuthenticationProvider myAuthenticationProvider;
 
-
+    private MyAuthTokenConfigurer securityConfigurerAdapter(){
+        TokenProvider tokenProvider = new TokenProvider("SuiBianXie",3000);
+        return new MyAuthTokenConfigurer(tokenProvider,userDetailsService);
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -33,12 +38,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .antMatchers("/admin/**").hasAnyAuthority("ADMIN")//添加角色new SimpleGrantedAuthority("ADMIN")
                     .antMatchers("/context/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
+                .and().apply(securityConfigurerAdapter())
                 .and()
-                .formLogin().and()
+                .formLogin().and().csrf().disable()
+                //前后端分离采用JWT 不需要session
                 .httpBasic();
+        //设置无状态
 //        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-//        http.authorizeRequests().anyRequest().authenticated().and().apply(securityConfigurerAdapter());
+//        http.authorizeRequests().anyRequest().authenticated()
     }
 
     /**
@@ -83,7 +91,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             public boolean matches(CharSequence charSequence, String s) {
                 return s.equals(charSequence.toString());
             }
-        });//设置自定义的userDetailsService
+        });//设置自定义的passwordEncoder
+
+        //使用自定义的authenticationProvider
+//        auth.authenticationProvider(myAuthenticationProvider);
 
     }
 
@@ -91,9 +102,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }*/
-    private MyAuthTokenConfigurer securityConfigurerAdapter(){
-        TokenProvider tokenProvider = new TokenProvider("SuiBianXie",3000);
-        return new MyAuthTokenConfigurer(tokenProvider,userDetailsService);
-    }
+
 
 }

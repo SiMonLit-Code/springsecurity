@@ -1,4 +1,4 @@
-package com.czz.securitydemo.user;
+package com.czz.securitydemo.userservice;
 
 import com.czz.securitydemo.bean.User;
 import com.czz.securitydemo.repository.UserRepository;
@@ -17,7 +17,7 @@ import java.util.Collection;
  * @author : czz
  * @version : 1.0.0
  * @create : 2020-11-04 16:18:00
- * @description :
+ * @description : 包装UserDetail
  */
 @Component("userDetailsService")
 public class CustomUserDetailsService implements UserDetailsService {

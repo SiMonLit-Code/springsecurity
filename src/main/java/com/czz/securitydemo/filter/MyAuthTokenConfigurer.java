@@ -1,4 +1,4 @@
-package com.czz.securitydemo.config;
+package com.czz.securitydemo.filter;
 
 import com.czz.securitydemo.filter.MyTokenFilter;
 import com.czz.securitydemo.token.TokenProvider;
